@@ -24,7 +24,8 @@
   },
   "homepage": "https://gitlab.com/mateuspytel/libstorefront-plugin-template#readme",
   "dependencies": {
-    "@grupakmk/libstorefront": "^1.0.0"
+    "@grupakmk/libstorefront": "^1.0.0",
+    "query-string": "^6.13.8"
   },
   "devDependencies": {
     "babel-loader": "^8.2.2",
