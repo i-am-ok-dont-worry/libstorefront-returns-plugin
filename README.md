@@ -1,19 +1,50 @@
-# NAMING CONVENTIONS
-* `name` property in package.json should be changed to a module name
-* `description` property in package.json should describe plugin feature
+## Order return plugin
+Plugin provides support for fetching and creating returns.
 
-## Write plugin
-Entry point for plugin should be `index.ts` file. LSF plugin is a default void function 
-that accepts initialized Libstorefront instance.
+Return is where a customer is not satisfied with the product
+or the deliverable, & businesses need to create a return the good, based on customer return request.
 
-Plugin has access to all lsf functionality including IOC container. Dependencies
-can be rebound according to plugin needs.
+## Model
+Plugin adds new type `OrderReturn` which is a following interface:
+```javascript
+{
+    order_id: number,
+    customer_id?: string,
+    customer_email?: string,
+    reason: string,
+    comment: string,
+    items: unknown[],
+    return_id?: number,
+    created_at?: string,
+    status?: number,
+    return_number?: string,
+}
+```
 
-## Build plugin
-Run `npm run build` to build plugin.
-Output can be found in `/dist` catalog.
+## Service
+Plugin registers service `OrderReturnService` which serves as a plugin entry point.
+Service exposes 3 methods:
+* `getOrderReturns ({ pageSize, currentPage, sortBy, sortDir }: { pageSize?: number, currentPage?: number, sortBy?: string, sortDir?: 'asc'|'desc' } = {}): Promise<OrderReturn[]>` - Returns list of user returns
+* `getSingleOrderReturn (orderReturnId: string): Promise<OrderReturn>` - Returns single return
+* `createOrderReturn (orderReturn: OrderReturn): Promise<string>` - creates return on behalf of current logged-in user 
 
+## Redux store
+Plugin adds new state branch called `orderReturns` to the original Libstorefront Redux store.
+Order returns branch interface is as follows:
+```javascript
+{
+    list: {
+        start: number,
+        perPage: number,
+        total: number,
+        items: OrderReturn[]
+    },
+    current: OrderReturn
+}
+```
+ 
 ## Test plugin
-Plugin must be tested in isolation. Unit tests can be performed via jest framework
-in `/tests/test.ts` file.
-Template includes by default mocked LocalStorage object.
+Plugin can be tested in isolation. To run plugin integration test:
+```shell script
+npm run test:integration
+```
