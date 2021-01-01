@@ -44,7 +44,14 @@ export namespace OrderReturnsThunks {
     };
 
     export const createOrderReturn = (orderReturnData: OrderReturn) => async (dispatch, getState) => {
-      const response = await IOCContainer.get(OrderReturnsDao).createReturn(orderReturnData);
-      return response;
+        const customer = IOCContainer.get(AbstractStore).getState().user.current;
+        if (!customer) { throw new Error('Cannot create order returns for unauthorized used'); }
+        const response = await IOCContainer.get(OrderReturnsDao).createReturn({
+            ...orderReturnData,
+            customer_id: customer.id,
+            customer_email: customer.email
+        });
+
+        return response;
     };
 }

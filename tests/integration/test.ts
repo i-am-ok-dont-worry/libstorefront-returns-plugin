@@ -12,7 +12,6 @@ const LSF = new LibStorefront({
 
 (async () => {
     const service = LSF.get(OrderReturnService);
-    const returns = await service.createOrderReturn();
     debugger;
 })();
 
