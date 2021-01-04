@@ -172,9 +172,9 @@ var OrderReturnsDao = /** @class */ (function () {
     function OrderReturnsDao(taskQueue) {
         this.taskQueue = taskQueue;
     }
-    OrderReturnsDao.prototype.getOrderReturnsList = function (_a) {
+    OrderReturnsDao.prototype.getOrderReturnsList = function (_a, token) {
         var customerId = _a.customerId, pageSize = _a.pageSize, currentPage = _a.currentPage, sortBy = _a.sortBy, sortDir = _a.sortDir;
-        var query = __assign({ pageSize: pageSize || 50, currentPage: currentPage || 0 }, (sortBy && { sortBy: sortBy, sortDir: sortDir || 'asc' }));
+        var query = __assign({ pageSize: pageSize || 50, currentPage: currentPage || 0, token: token }, (sortBy && { sortBy: sortBy, sortDir: sortDir || 'asc' }));
         return this.taskQueue.execute({
             url: libstorefront_1.URLTransform.getAbsoluteApiUrl('/api/vendor/returns/' + customerId + '?' + query_string_1.default.stringify(query)),
             payload: {
@@ -185,9 +185,9 @@ var OrderReturnsDao = /** @class */ (function () {
             silent: true
         });
     };
-    OrderReturnsDao.prototype.getOrderReturn = function (orderReturnId) {
+    OrderReturnsDao.prototype.getOrderReturn = function (orderReturnId, token) {
         return this.taskQueue.execute({
-            url: libstorefront_1.URLTransform.getAbsoluteApiUrl('/api/vendor/returns/single/' + orderReturnId),
+            url: libstorefront_1.URLTransform.getAbsoluteApiUrl('/api/vendor/returns/single/' + orderReturnId + '?token=' + token || false),
             payload: {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
@@ -196,9 +196,9 @@ var OrderReturnsDao = /** @class */ (function () {
             silent: true
         });
     };
-    OrderReturnsDao.prototype.createReturn = function (orderReturn) {
+    OrderReturnsDao.prototype.createReturn = function (orderReturn, token) {
         return this.taskQueue.execute({
-            url: libstorefront_1.URLTransform.getAbsoluteApiUrl('/api/vendor/returns'),
+            url: libstorefront_1.URLTransform.getAbsoluteApiUrl('/api/vendor/returns' + '?token=' + token),
             payload: {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -492,16 +492,16 @@ var OrderReturnsThunks;
     OrderReturnsThunks.getOrderReturns = function (_a) {
         var pageSize = _a.pageSize, currentPage = _a.currentPage, sortBy = _a.sortBy, sortDir = _a.sortDir;
         return function (dispatch, getState) { return __awaiter(_this, void 0, void 0, function () {
-            var customer, response, _a, items, total, e_1;
+            var userState, response, _a, items, total, e_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 5, , 6]);
-                        customer = libstorefront_1.IOCContainer.get(libstorefront_1.AbstractStore).getState().user.current;
-                        if (!customer) {
+                        userState = libstorefront_1.IOCContainer.get(libstorefront_1.AbstractStore).getState().user;
+                        if (!userState.current || !userState.token) {
                             throw new Error('Cannot fetch order returns for unauthorized used');
                         }
-                        return [4 /*yield*/, libstorefront_1.IOCContainer.get(dao_1.OrderReturnsDao).getOrderReturnsList({ customerId: customer.id, pageSize: pageSize, currentPage: currentPage, sortBy: sortBy, sortDir: sortDir })];
+                        return [4 /*yield*/, libstorefront_1.IOCContainer.get(dao_1.OrderReturnsDao).getOrderReturnsList({ customerId: userState.current.id, pageSize: pageSize, currentPage: currentPage, sortBy: sortBy, sortDir: sortDir }, userState.token)];
                     case 1:
                         response = _b.sent();
                         if (!(response && response.code === libstorefront_1.HttpStatus.OK)) return [3 /*break*/, 3];
@@ -527,7 +527,7 @@ var OrderReturnsThunks;
         }); };
     };
     OrderReturnsThunks.getOrderReturn = function (returnId) { return function (dispatch, getState) { return __awaiter(_this, void 0, void 0, function () {
-        var response, e_2;
+        var userState, response, e_2;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -535,7 +535,8 @@ var OrderReturnsThunks;
                     if (!returnId) {
                         throw new Error('Return id is undefined');
                     }
-                    return [4 /*yield*/, libstorefront_1.IOCContainer.get(dao_1.OrderReturnsDao).getOrderReturn(returnId)];
+                    userState = libstorefront_1.IOCContainer.get(libstorefront_1.AbstractStore).getState().user;
+                    return [4 /*yield*/, libstorefront_1.IOCContainer.get(dao_1.OrderReturnsDao).getOrderReturn(returnId, userState.token)];
                 case 1:
                     response = _a.sent();
                     if (!(response && response.code === libstorefront_1.HttpStatus.OK)) return [3 /*break*/, 3];
@@ -554,15 +555,15 @@ var OrderReturnsThunks;
         });
     }); }; };
     OrderReturnsThunks.createOrderReturn = function (orderReturnData) { return function (dispatch, getState) { return __awaiter(_this, void 0, void 0, function () {
-        var customer, response;
+        var userState, response;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    customer = libstorefront_1.IOCContainer.get(libstorefront_1.AbstractStore).getState().user.current;
-                    if (!customer) {
+                    userState = libstorefront_1.IOCContainer.get(libstorefront_1.AbstractStore).getState().user;
+                    if (!userState.current || !userState.token) {
                         throw new Error('Cannot create order returns for unauthorized used');
                     }
-                    return [4 /*yield*/, libstorefront_1.IOCContainer.get(dao_1.OrderReturnsDao).createReturn(__assign(__assign({}, orderReturnData), { customer_id: customer.id, customer_email: customer.email }))];
+                    return [4 /*yield*/, libstorefront_1.IOCContainer.get(dao_1.OrderReturnsDao).createReturn(__assign(__assign({}, orderReturnData), { customer_id: userState.current.id, customer_email: userState.current.email }), userState.token)];
                 case 1:
                     response = _a.sent();
                     return [2 /*return*/, response];

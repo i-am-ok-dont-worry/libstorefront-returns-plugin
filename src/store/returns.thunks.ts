@@ -7,9 +7,9 @@ export namespace OrderReturnsThunks {
 
     export const getOrderReturns = ({ pageSize, currentPage, sortBy, sortDir }) => async (dispatch, getState) => {
         try {
-            const customer = IOCContainer.get(AbstractStore).getState().user.current;
-            if (!customer) { throw new Error('Cannot fetch order returns for unauthorized used'); }
-            const response = await IOCContainer.get(OrderReturnsDao).getOrderReturnsList({ customerId: customer.id, pageSize, currentPage, sortBy, sortDir });
+            const userState = IOCContainer.get(AbstractStore).getState().user;
+            if (!userState.current || !userState.token) { throw new Error('Cannot fetch order returns for unauthorized used'); }
+            const response = await IOCContainer.get(OrderReturnsDao).getOrderReturnsList({ customerId: userState.current.id, pageSize, currentPage, sortBy, sortDir }, userState.token);
 
             if (response && response.code === HttpStatus.OK) {
                 const { items, total } = response.result;
@@ -31,7 +31,8 @@ export namespace OrderReturnsThunks {
     export const getOrderReturn = (returnId) => async (dispatch, getState) => {
         try {
             if (!returnId) { throw new Error('Return id is undefined'); }
-            const response = await IOCContainer.get(OrderReturnsDao).getOrderReturn(returnId);
+            const userState = IOCContainer.get(AbstractStore).getState().user;
+            const response = await IOCContainer.get(OrderReturnsDao).getOrderReturn(returnId, userState.token);
 
             if (response && response.code === HttpStatus.OK) {
                 await dispatch(OrderReturnsActions.setCurrent(response.result));
@@ -44,13 +45,13 @@ export namespace OrderReturnsThunks {
     };
 
     export const createOrderReturn = (orderReturnData: OrderReturn) => async (dispatch, getState) => {
-        const customer = IOCContainer.get(AbstractStore).getState().user.current;
-        if (!customer) { throw new Error('Cannot create order returns for unauthorized used'); }
+        const userState = IOCContainer.get(AbstractStore).getState().user;
+        if (!userState.current || !userState.token) { throw new Error('Cannot create order returns for unauthorized used'); }
         const response = await IOCContainer.get(OrderReturnsDao).createReturn({
             ...orderReturnData,
-            customer_id: customer.id,
-            customer_email: customer.email
-        });
+            customer_id: userState.current.id,
+            customer_email: userState.current.email,
+        }, userState.token);
 
         return response;
     };

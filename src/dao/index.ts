@@ -6,10 +6,11 @@ import qs from 'query-string';
 @injectable()
 export class OrderReturnsDao {
 
-    public getOrderReturnsList ({ customerId, pageSize, currentPage, sortBy, sortDir }): Promise<Task> {
+    public getOrderReturnsList ({ customerId, pageSize, currentPage, sortBy, sortDir }, token: string): Promise<Task> {
         const query = {
             pageSize: pageSize || 50,
             currentPage: currentPage || 0,
+            token,
             ...(sortBy && { sortBy, sortDir: sortDir || 'asc' })
         };
         return this.taskQueue.execute({
@@ -23,9 +24,9 @@ export class OrderReturnsDao {
         });
     }
 
-    public getOrderReturn (orderReturnId: string): Promise<Task> {
+    public getOrderReturn (orderReturnId: string, token: string): Promise<Task> {
         return this.taskQueue.execute({
-            url: URLTransform.getAbsoluteApiUrl('/api/vendor/returns/single/' + orderReturnId),
+            url: URLTransform.getAbsoluteApiUrl('/api/vendor/returns/single/' + orderReturnId + '?token=' + token || ''),
             payload: {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
@@ -35,9 +36,9 @@ export class OrderReturnsDao {
         });
     }
 
-    public createReturn (orderReturn: OrderReturn): Promise<Task> {
+    public createReturn (orderReturn: OrderReturn, token: string): Promise<Task> {
         return this.taskQueue.execute({
-            url: URLTransform.getAbsoluteApiUrl('/api/vendor/returns'),
+            url: URLTransform.getAbsoluteApiUrl('/api/vendor/returns' + '?token=' + token),
             payload: {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

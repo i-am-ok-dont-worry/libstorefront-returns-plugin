@@ -8,8 +8,8 @@ export declare class OrderReturnsDao {
         currentPage: any;
         sortBy: any;
         sortDir: any;
-    }): Promise<Task>;
-    getOrderReturn(orderReturnId: string): Promise<Task>;
-    createReturn(orderReturn: OrderReturn): Promise<Task>;
+    }, token: string): Promise<Task>;
+    getOrderReturn(orderReturnId: string, token: string): Promise<Task>;
+    createReturn(orderReturn: OrderReturn, token: string): Promise<Task>;
     constructor(taskQueue: TaskQueue);
 }
