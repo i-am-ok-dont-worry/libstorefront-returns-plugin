@@ -12,6 +12,7 @@ const LSF = new LibStorefront({
 
 (async () => {
     const service = LSF.get(OrderReturnService);
+    const res = await LSF.UserService.login('test@grupakmk.pl', 'Testowe2!');
     const returns = await service.getOrderReturns();
     debugger;
 })();

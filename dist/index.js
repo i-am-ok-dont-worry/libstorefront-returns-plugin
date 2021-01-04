@@ -514,7 +514,7 @@ var OrderReturnsThunks;
                             }))];
                     case 2:
                         _b.sent();
-                        return [3 /*break*/, 4];
+                        return [2 /*return*/, items];
                     case 3: throw new Error("Empty list");
                     case 4: return [3 /*break*/, 6];
                     case 5:
@@ -585,6 +585,13 @@ var OrderReturnsThunks;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.OrderReturnStatus = void 0;
+var OrderReturnStatus;
+(function (OrderReturnStatus) {
+    OrderReturnStatus[OrderReturnStatus["STATUS_CREATED"] = 1] = "STATUS_CREATED";
+    OrderReturnStatus[OrderReturnStatus["STATUS_IN_PROGRESS"] = 2] = "STATUS_IN_PROGRESS";
+    OrderReturnStatus[OrderReturnStatus["DONE"] = 3] = "DONE";
+})(OrderReturnStatus = exports.OrderReturnStatus || (exports.OrderReturnStatus = {}));
 
 
 /***/ }),

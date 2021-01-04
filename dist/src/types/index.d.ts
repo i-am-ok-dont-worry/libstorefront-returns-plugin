@@ -8,6 +8,11 @@ export interface OrderReturn {
     items: CartItem[];
     returns_id?: number;
     created_at?: string;
-    status?: number;
+    status?: OrderReturnStatus;
     return_number?: string;
+}
+export declare enum OrderReturnStatus {
+    STATUS_CREATED = 1,
+    STATUS_IN_PROGRESS = 2,
+    DONE = 3
 }

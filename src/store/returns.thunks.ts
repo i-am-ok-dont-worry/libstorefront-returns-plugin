@@ -19,6 +19,8 @@ export namespace OrderReturnsThunks {
                     perPage: pageSize,
                     start: currentPage
                 }));
+
+                return items;
             } else {
                 throw new Error(`Empty list`);
             }
