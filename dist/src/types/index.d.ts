@@ -1,11 +1,14 @@
-import { CartItem } from '@grupakmk/libstorefront';
+export interface OrderReturnItem {
+    item_id?: number | string;
+    qty_returned?: number;
+}
 export interface OrderReturn {
     order_id: number;
     customer_id?: string;
     customer_email?: string;
     reason: string;
     comment: string;
-    items: CartItem[];
+    items: OrderReturnItem[];
     returns_id?: number;
     created_at?: string;
     status?: OrderReturnStatus;
