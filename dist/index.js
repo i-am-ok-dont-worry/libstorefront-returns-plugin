@@ -174,9 +174,9 @@ var OrderReturnsDao = /** @class */ (function () {
     }
     OrderReturnsDao.prototype.getOrderReturnsList = function (_a, token) {
         var customerId = _a.customerId, pageSize = _a.pageSize, currentPage = _a.currentPage, sortBy = _a.sortBy, sortDir = _a.sortDir;
-        var query = __assign({ pageSize: pageSize || 50, currentPage: currentPage || 0, token: token }, (sortBy && { sortBy: sortBy, sortDir: sortDir || 'asc' }));
+        var query = __assign({ pageSize: pageSize || 50, currentPage: currentPage || 0 }, (sortBy && { sortBy: sortBy, sortDir: sortDir || 'asc' }));
         return this.taskQueue.execute({
-            url: libstorefront_1.URLTransform.getAbsoluteApiUrl('/api/vendor/returns/' + customerId + '?' + query_string_1.default.stringify(query)),
+            url: libstorefront_1.URLTransform.getAbsoluteApiUrl('/api/vendor/returns/' + customerId + query_string_1.default.stringify(query)) + '&storeCode={{storeCode}}&token={{token}}',
             payload: {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
@@ -187,7 +187,7 @@ var OrderReturnsDao = /** @class */ (function () {
     };
     OrderReturnsDao.prototype.getOrderReturn = function (orderReturnId, token) {
         return this.taskQueue.execute({
-            url: libstorefront_1.URLTransform.getAbsoluteApiUrl('/api/vendor/returns/single/' + orderReturnId + '?token=' + token || false),
+            url: libstorefront_1.URLTransform.getAbsoluteApiUrl('/api/vendor/returns/single/' + orderReturnId + '&storeCode={{storeCode}}&token={{token}}'),
             payload: {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
@@ -198,7 +198,7 @@ var OrderReturnsDao = /** @class */ (function () {
     };
     OrderReturnsDao.prototype.createReturn = function (orderReturn, token) {
         return this.taskQueue.execute({
-            url: libstorefront_1.URLTransform.getAbsoluteApiUrl('/api/vendor/returns' + '?token=' + token),
+            url: libstorefront_1.URLTransform.getAbsoluteApiUrl('/api/vendor/returns' + '&storeCode={{storeCode}}&token={{token}}'),
             payload: {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
