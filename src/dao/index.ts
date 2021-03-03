@@ -13,7 +13,7 @@ export class OrderReturnsDao {
             ...(sortBy && { sortBy, sortDir: sortDir || 'asc' })
         };
         return this.taskQueue.execute({
-            url: URLTransform.getAbsoluteApiUrl('/api/vendor/returns/' + customerId + qs.stringify(query)) + '&storeCode={{storeCode}}&token={{token}}',
+            url: URLTransform.getAbsoluteApiUrl('/api/vendor/returns/' + customerId + '?' + qs.stringify(query)) + '&storeCode={{storeCode}}&token={{token}}',
             payload: {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
@@ -25,7 +25,7 @@ export class OrderReturnsDao {
 
     public getOrderReturn (orderReturnId: string, token: string): Promise<Task> {
         return this.taskQueue.execute({
-            url: URLTransform.getAbsoluteApiUrl('/api/vendor/returns/single/' + orderReturnId + '&storeCode={{storeCode}}&token={{token}}'),
+            url: URLTransform.getAbsoluteApiUrl('/api/vendor/returns/single/' + orderReturnId + '?storeCode={{storeCode}}&token={{token}}'),
             payload: {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
@@ -37,7 +37,7 @@ export class OrderReturnsDao {
 
     public createReturn (orderReturn: OrderReturn, token: string): Promise<Task> {
         return this.taskQueue.execute({
-            url: URLTransform.getAbsoluteApiUrl('/api/vendor/returns' + '&storeCode={{storeCode}}&token={{token}}'),
+            url: URLTransform.getAbsoluteApiUrl('/api/vendor/returns' + '?storeCode={{storeCode}}&token={{token}}'),
             payload: {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
